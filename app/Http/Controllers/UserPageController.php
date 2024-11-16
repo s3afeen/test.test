@@ -16,8 +16,9 @@ class UserPageController extends Controller
     {
         $categories = Category::all();
         $products = Product::paginate(8);
+        $productsCount = Product::count();
 
-        return view('userSide.landing', ['categories' => $categories , 'products' => $products]);
+        return view('userSide.landing', ['categories' => $categories , 'products' => $products ,'productsCount'=>$productsCount ]);
     }
 
     public function shop(Request $request)
@@ -51,10 +52,12 @@ class UserPageController extends Controller
         }
 
         $products = $query->paginate(9);
+        $productsCount = Product::count();
 
         return view('userSide.shop', [
             'categories' => $categories,
-            'products' => $products
+            'products' => $products,
+            'productsCount' => $productsCount,
         ]);
     }
 

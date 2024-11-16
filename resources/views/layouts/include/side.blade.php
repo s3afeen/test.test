@@ -21,19 +21,19 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ route('products.index') }}">
-                <span class="menu-title">Product Management</span>
+                <span class="menu-title">Product </span>
                 <i class="mdi mdi-cart menu-icon "></i>
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ route('orders.index') }}">
-                <span class="menu-title">Order Management</span>
+                <span class="menu-title">Order </span>
                 <i class="mdi mdi-airplane-takeoff menu-icon"></i>
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ route('users.index') }}">
-                <span class="menu-title">User Management</span>
+                <span class="menu-title">User </span>
                 <i class="mdi mdi-account-multiple menu-icon"></i>
               </a>
             </li>
@@ -44,8 +44,15 @@
               </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="{{ route('contacts.showAll') }}">
+                    <span class="menu-title">Contacts</span>
+                    <i class="mdi mdi-chart-areaspline menu-icon"></i>
+                </a>
+            </li>
+
+            <li class="nav-item">
               <a class="nav-link" href="{{ route('categories.index') }}">
-                <span class="menu-title">Category Management</span>
+                <span class="menu-title">Category </span>
                 <i class="mdi mdi-format-align-justify menu-icon"></i>
               </a>
             </li>

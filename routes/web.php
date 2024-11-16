@@ -15,6 +15,9 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserPageController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\WishlistController;
 
 Auth::routes();
 
@@ -37,7 +40,7 @@ Route::middleware(['auth' , 'admin'])->group(function () {
 Route::get('/', [UserPageController::class, 'LandingPage'])->name('landing');
 Route::get('/home', [UserPageController::class, 'LandingPage'])->name('landing');
 Route::get('/shop', [UserPageController::class, 'shop'])->name('shop');
-Route::get('/contact', function () { return view('userSide.contact'); });
+// Route::get('/contact', function () { return view('userSide.contact'); });
 Route::get('/productDetails/{id}', [UserPageController::class, 'showProduct'])->name('product.details');
 
 
@@ -57,21 +60,18 @@ Route::post('/account/settings/update', [UserPageController::class, 'updateAccou
 Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
 
 
+Route::resource('/contacts', ContactController::class);
+
+Route::get('/contacts/showAll', [ContactController::class, 'showAll'])->name('contacts.showAll');
 
 
 
 
-// أضف هذه المسارات إلى ملف web.php
-
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\WishlistController;
-
-// مسارات سلة المشتريات
 Route::middleware(['auth'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-    Route::delete('/cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
     Route::put('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
 });
 
 // مسارات المفضلة

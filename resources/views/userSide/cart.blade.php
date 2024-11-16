@@ -24,43 +24,54 @@
                             <th>Products</th>
                             <th>Price</th>
                             <th>Quantity</th>
-                            <th>Total</th>
+
                             <th>Remove</th>
                         </tr>
                     </thead>
                     <tbody class="align-middle">
                         @forelse($cartItems as $item)
-                            <tr data-id="{{ $item->id }}">
-                                <td class="align-middle">
-                                    <img src="{{ $item->product->productImages->first() ? asset('storage/' . $item->product->productImages->first()->image_path) : asset('default-image.jpg') }}"
-                                         alt="{{ $item->product->name }}"
-                                         style="width: 50px;">
-                                    {{ $item->product->name }}
-                                </td>
-                                <td class="align-middle">${{ number_format($item->product->price, 2) }}</td>
-                                <td class="align-middle">
-                                    <div class="input-group quantity mx-auto" style="width: 100px;">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-primary btn-minus" data-id="{{ $item->id }}">
-                                                <i class="fa fa-minus"></i>
-                                            </button>
-                                        </div>
-                                        <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center"
-                                               value="{{ $item->quantity }}" min="1">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-primary btn-plus" data-id="{{ $item->id }}">
-                                                <i class="fa fa-plus"></i>
-                                            </button>
-                                        </div>
+                        <tr data-id="{{ $item->id }}">
+                            <td class="align-middle">
+                                <img src="{{ $item->product->productImages->first() ? asset('storage/' . $item->product->productImages->first()->image_path) : asset('default-image.jpg') }}"
+                                     alt="{{ $item->product->name }}"
+                                     style="width: 50px;">
+                                {{ $item->product->name }}
+                            </td>
+                            <td class="align-middle">${{ number_format($item->product->price, 2) }}</td>
+                            <td class="align-middle">
+                                <div class="input-group quantity mx-auto" style="width: 100px;">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-sm btn-primary btn-minus" data-id="{{ $item->id }}">
+                                            <i class="fa fa-minus"></i>
+                                        </button>
                                     </div>
-                                </td>
-                                <td class="align-middle">${{ number_format($item->product->price * $item->quantity, 2) }}</td>
-                                <td class="align-middle">
-                                    <button class="btn btn-sm btn-danger btn-remove" data-id="{{ $item->id }}">
+                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center"
+                                           value="{{ $item->quantity }}" min="1">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-sm btn-primary btn-plus" data-id="{{ $item->id }}">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- Form to submit updated quantity -->
+                                <form action="{{ route('cart.update', $item->id) }}" method="POST" class="update-quantity-form" style="display: none;">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center"
+                                    value="{{ $item->quantity }}" min="1">
+                            </form>
+                            </td>
+                            <td class="align-middle">
+                                <form action="{{ route('cart.remove', $item->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger btn-remove">
                                         <i class="fa fa-times"></i>
                                     </button>
-                                </td>
-                            </tr>
+                                </form>
+                            </td>
+                        </tr>
+
                         @empty
                             <tr>
                                 <td colspan="5" class="text-center py-4">
@@ -108,51 +119,31 @@
 
 @push('scripts')
 <script>
-$(document).ready(function() {
-    // Update quantity
-    $('.btn-plus, .btn-minus').on('click', function(e) {
-        e.preventDefault();
-        const id = $(this).data('id');
-        const isPlus = $(this).hasClass('btn-plus');
-        const input = $(this).closest('.quantity').find('input');
-        let value = parseInt(input.val());
+$(document).ready(function () {
+    $('.btn-plus, .btn-minus').on('click', function (e) {
+        e.preventDefault(); // منع إعادة تحميل الصفحة
 
+        const button = $(this);
+        const isPlus = button.hasClass('btn-plus'); // التحقق من نوع الزر
+        const input = button.closest('.quantity').find('input'); // حقل الإدخال
+        let value = parseInt(input.val()); // تحويل القيمة إلى عدد صحيح
+
+        // تحديث الكمية بناءً على الزر
         if (isPlus) {
             value++;
         } else if (value > 1) {
             value--;
         }
 
-        input.val(value);
+        input.val(value); // تحديث القيمة في حقل الإدخال
 
-        $.ajax({
-            url: `/cart/${id}`,
-            method: 'PUT',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: { quantity: value },
-            success: function(response) {
-                location.reload();
-            }
-        });
-    });
-
-    // Remove item
-    $('.btn-remove').on('click', function() {
-        const id = $(this).data('id');
-
-        $.ajax({
-            url: `/cart/${id}`,
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                location.reload();
-            }
-        });
+        // إرسال الطلب لتحديث الكمية في الخادم
+        const form = button.closest('tr').find('form.update-quantity-form');
+        form.find('input[name="quantity"]').val(value); // تعيين الكمية الجديدة
+        form.submit(); // إرسال النموذج
     });
 });
+
+
 </script>
 @endpush

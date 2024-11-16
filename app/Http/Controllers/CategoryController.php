@@ -28,22 +28,37 @@ class CategoryController extends Controller
 
     // Store a newly created resource in storage.
     public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-    ]);
+    {
+        // Validate the incoming request data
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+        ]);
 
-    $data = $request->all();
+        // Collect the input data
+        $data = $request->all();
 
-    if ($request->hasFile('image')) {
-        $data['image'] = $request->file('image')->store('category_images', 'public');
+        // Check if there's an image in the request
+        if ($request->hasFile('image')) {
+            // Get the image file from the request
+            $file = $request->file('image');
+
+            // Generate a unique file name using the current time
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+
+            // Use the Storage facade to store the image in the 'public' disk and save the path
+            $path = $file->storeAs('public/uploads/categories', $filename); // The path will be stored as public/uploads/salon/filename
+
+            // Save the relative path for the image to be stored in the 'image' column in the database
+            $data['image'] = 'uploads/categories/' . $filename;
+        }
+
+        // Create the category in the database
+        Category::create($data);
+
+        // Redirect to the categories index page with a success message
+        return redirect()->route('categories.index')->with('success', 'Category created successfully.');
     }
-
-    Category::create($data);
-
-    return redirect()->route('categories.index')->with('success', 'Category created successfully.');
-}
 
 
     // Display the specified resource.
@@ -94,7 +109,7 @@ class CategoryController extends Controller
     }
 
 
-   
+
 
 
 }

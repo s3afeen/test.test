@@ -14,8 +14,9 @@ class ProductController extends Controller
     {
         // جلب جميع المنتجات مع الصور
         $products = Product::with('productImages')->get();
+        $productsCount = Product::count();
 
-        return view('products.index', compact('products'));
+        return view('products.index', compact('products' ,'productsCount'));
     }
 
     public function create()

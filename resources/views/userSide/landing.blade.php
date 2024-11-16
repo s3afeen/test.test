@@ -132,14 +132,14 @@
                                 <input type="hidden" name="quantity" value="1">
                                 <button type="submit" class="btn btn-outline-dark btn-square"><i class="fa fa-shopping-cart"></i></button>
                             </form>
-                            <form action="{{ route('wishlist.toggle') }}" method="POST" class="d-inline">
+                            {{-- <form action="{{ route('wishlist.toggle') }}" method="POST" class="d-inline">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <button type="submit" class="btn btn-outline-dark btn-square">
                                     <i class="far fa-heart {{ Auth::check() && Auth::user()->wishlists->contains('product_id', $product->id) ? 'text-danger' : '' }}"></i>
                                 </button>
-                            </form>
-                            <a class="btn btn-outline-dark btn-square" href="{{url('productDetails', $product->id)}}"><i class="fa fa-search"></i></a>
+                            </form> --}}
+                            <a class="btn btn-outline-dark btn-square" href="{{url('productDetails', $product->id)}}"><i class="fa fa-eye"></i></a>
                         </div>
                     </div>
                     <div class="text-center py-4">
