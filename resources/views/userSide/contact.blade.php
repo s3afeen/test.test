@@ -1,40 +1,56 @@
-@extends('layouts.app')
+@extends('layouts.masterUserSide.master')
 
 @section('content')
-<div class="card-body">
-    <h4 class="card-title">Contact Management</h4>
-    <p class="card-description">View all messages from users</p>
-
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th> # </th>
-                <th> Name </th>
-                <th> Email </th>
-                <th> Message </th>
-                <th> Created At </th>
-                <th> Actions </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($contacts as $contact)
-            <tr>
-                <td> {{ $contact->id }} </td>
-                <td> {{ $contact->name }} </td>
-                <td> {{ $contact->email }} </td>
-                <td> {{ $contact->message }} </td>
-                <td> {{ $contact->created_at->format('M d, Y') }} </td>
-                <td>
-                    <a href="{{ route('contacts.show', $contact->id) }}" class="btn btn-info btn-sm">View</a>
-                    <form action="{{ route('contacts.destroy', $contact->id) }}" method="POST" style="display: inline;">
+    <!-- Contact Start -->
+    <div class="container-fluid">
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Contact Us</span></h2>
+        <div class="row px-xl-5">
+            <div class="col-lg-7 mb-5">
+                <div class="contact-form bg-light p-30">
+                    <div id="success"></div>
+                    <form name="sentMessage" action="{{ route('contacts.store') }}" method="POST">
                         @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+                        <div class="control-group">
+                            <input type="text" class="form-control" name="name" placeholder="Your Name"
+                                required="required" data-validation-required-message="Please enter your name" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="email" class="form-control" name="email" placeholder="Your Email"
+                                required="required" data-validation-required-message="Please enter your email" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <textarea class="form-control" rows="8" name="message" placeholder="Message"
+                                required="required"
+                                data-validation-required-message="Please enter your message"></textarea>
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">Send
+                                Message</button>
+                        </div>
                     </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
+                    @if(session('success'))
+                        <div class="alert alert-success mt-3">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+            <div class="col-lg-5 mb-5">
+                <div class="bg-light p-30 mb-30">
+                    <iframe style="width: 100%; height: 250px;"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3406.0946453922767!2d34.48375831532296!3d31.512358981377277!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14fd7e0c6c3aa61d%3A0x769e7f6dd91ba6c5!2z2YXYs9mF2LnYqSDYp9mE2KfYsdmI2Kkg2KfZhNi52KfZgdiq2YrYqSDYtNmI2YXYrdmK!5e0!3m2!1sar!2s!4v1603794290143!5m2!1sar!2s"
+                    frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+                </div>
+                <div class="bg-light p-30 mb-3">
+                    <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, Aqaba, JO</p>
+                    <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>karajstore@example.com</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Contact End -->
 @endsection

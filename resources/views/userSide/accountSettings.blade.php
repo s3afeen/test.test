@@ -1,57 +1,110 @@
 @extends('layouts.masterUserSide.master')
+
 @section('content')
-
-<div class="container">
-    <h2>Account Settings</h2>
-    <form action="{{ route('account.settings.update') }}" method="POST">
-        @csrf
-        <!-- حقل الاسم -->
-        <div class="form-group">
-            <label for="name">Name:</label>
-            <input type="text" name="name" id="name" class="form-control" value="{{ auth()->user()->name }}">
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" href="{{ url('/') }}">Home</a>
+                <span class="breadcrumb-item active">Account Settings</span>
+            </nav>
         </div>
+    </div>
 
-        <!-- حقل البريد الإلكتروني -->
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" name="email" id="email" class="form-control" value="{{ auth()->user()->email }}">
-        </div>
+    <div class="row px-xl-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="bg-light p-30 mb-5">
+                <h4 class="mb-4">Account Settings</h4>
 
-        <!-- حقل كلمة المرور -->
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <div class="input-group">
-                <input type="password" name="password" id="password" class="form-control">
-                <button type="button" id="togglePassword" class="btn btn-darck">
-                Show
-                </button>
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form action="{{ route('account.settings.update') }}" method="POST">
+                    @csrf
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $user->name) }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $user->email) }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="current_password">Current Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="current_password" name="current_password">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="current_password">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">Required only if changing password</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new_password">New Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="new_password" name="new_password">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="new_password">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new_password_confirmation">Confirm New Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="new_password_confirmation" name="new_password_confirmation">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="new_password_confirmation">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Update Settings</button>
+                </form>
             </div>
         </div>
-
-        <script>
-            document.getElementById('togglePassword').addEventListener('click', function () {
-                const passwordField = document.getElementById('password');
-                const passwordFieldType = passwordField.getAttribute('type');
-
-                if (passwordFieldType === 'password') {
-                    passwordField.setAttribute('type', 'text');
-                    this.textContent = 'Hide';
-                } else {
-                    passwordField.setAttribute('type', 'password');
-                    this.textContent = 'Show';
-                }
-            });
-        </script>
-
-
-
-
-
-        <!-- زر التحديث -->
-        <button type="submit" class="btn btn-primary">Update</button>
-        @if(session('success'))
-            <p>{{ session('success') }}</p>
-        @endif
-    </form>
+    </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $('.toggle-password').click(function() {
+        const button = $(this);
+        const icon = button.find('i');
+        const input = $('#' + button.data('target'));
+
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            input.attr('type', 'password');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        }
+    });
+});
+</script>
+@endpush

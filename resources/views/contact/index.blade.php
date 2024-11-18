@@ -1,53 +1,62 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="card-body">
-    <h4 class="card-title">Contact Us</h4>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Contact Messages</h4>
+                </div>
+                <div class="card-body">
+                    @if(session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Message</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($contacts as $contact)
+                                    <tr>
+                                        <td>{{ $contact->id }}</td>
+                                        <td>{{ $contact->name }}</td>
+                                        <td>{{ $contact->email }}</td>
+                                        <td>{{ Str::limit($contact->message, 50) }}</td>
+                                        <td>{{ $contact->created_at->format('Y-m-d H:i') }}</td>
+                                        <td>
+                                            <form action="{{ route('contacts.destroy', $contact->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm"
+                                                        onclick="return confirm('Are you sure you want to delete this message?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center">No messages found</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-    @elseif(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
-
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>User Name</th>
-                    <th>Email</th>
-                    <th>Message</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($contacts as $contact)
-                <tr>
-                    <td>{{ $contact->id }}</td>
-                    <td>{{ $contact->user->name }}</td>
-                    <td>{{ $contact->user->email }}</td>
-                    <td>{{ $contact->message }}</td>
-                    <td>{{ $contact->created_at->format('M d, Y') }}</td>
-                    <td>
-                        <form action="{{ route('contacts.destroy', $contact->id) }}" method="POST" style="display: inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this message? This action cannot be undone.')">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
     </div>
-
-    {{-- Pagination (Optional, if you decide to paginate) --}}
-    {{-- {{ $contacts->links() }} --}}
 </div>
 @endsection

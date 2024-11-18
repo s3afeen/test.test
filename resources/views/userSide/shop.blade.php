@@ -88,9 +88,13 @@
                                     <img class="img-fluid w-100" src="{{ asset('default-image.jpg') }}" alt="{{ $product->name }}">
                                 @endif
                                 <div class="product-action">
-                                    <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
-                                    <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
-                                    <a class="btn btn-outline-dark btn-square" href="{{url('productDetails', $product->id)}}"><i class="fa fa-search"></i></a>
+                                    <form action="{{ route('cart.add') }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-outline-dark btn-square"><i class="fa fa-shopping-cart"></i></button>
+                                    </form>
+                                    <!-- <a class="btn btn-outline-dark btn-square" href="{{url('productDetails', $product->id)}}"><i class="fa fa-eye"></i></a> -->
                                 </div>
                             </div>
                             <div class="text-center py-4">
