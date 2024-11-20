@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CartItem;
+use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,9 +15,9 @@ class CartController extends Controller
         $cartItems = CartItem::where('user_id', Auth::id())
             ->with('product.productImages')
             ->get();
-            $productsCount = Product::count();
+        $productsCount = Product::count();
 
-        return view('userSide.cart', compact('cartItems' ,'productsCount'));
+        return view('userSide.cart', compact('cartItems', 'productsCount'));
     }
 
     public function add(Request $request)
@@ -61,30 +62,66 @@ class CartController extends Controller
 
     public function update(Request $request, $id)
     {
-        // التحقق من الكمية المدخلة
         $request->validate([
             'quantity' => 'required|integer|min:1'
         ]);
 
-        // تحديث الكمية في قاعدة البيانات
         $cartItem = CartItem::where('user_id', Auth::id())
             ->where('id', $id)
             ->first();
 
         if ($cartItem) {
-            $cartItem->quantity = $request->quantity;  // تعيين الكمية الجديدة
-            $cartItem->save();  // حفظ التغييرات
+            $cartItem->quantity = $request->quantity;
+            $cartItem->save();
         }
 
-        // التحقق إذا كان الطلب من نوع AJAX
         if ($request->ajax()) {
             return response()->json(['message' => 'تم تحديث الكمية بنجاح']);
         }
 
-        // إعادة توجيه المستخدم مع رسالة نجاح
         return redirect()->back()->with('success', 'تم تحديث الكمية');
     }
 
+    public function checkout()
+    {
+        try {
+            // Get cart items
+            $cartItems = CartItem::where('user_id', Auth::id())
+                ->with('product')
+                ->get();
 
+            if ($cartItems->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Your cart is empty'
+                ]);
+            }
 
+            // Calculate total
+            $total = $cartItems->sum(function($item) {
+                return $item->quantity * $item->product->price;
+            }) + 10; // Adding shipping cost
+
+            // Create order
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'total' => $total,
+                'status' => 'pending'
+            ]);
+
+            // Clear cart
+            CartItem::where('user_id', Auth::id())->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order placed successfully!',
+                'redirect' => route('orders.index')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing your order.'
+            ], 500);
+        }
+    }
 }

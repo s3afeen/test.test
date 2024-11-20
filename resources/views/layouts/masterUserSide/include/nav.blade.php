@@ -7,14 +7,12 @@
             </a>
             <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999;">
                 <div class="navbar-nav w-100">
-                    <a href="/shop?category=5" class="nav-item nav-link">Headphones</a>
-                    <a href="/shop?category=6" class="nav-item nav-link">Charger</a>
-                    <a href="/shop?category=7" class="nav-item nav-link">Charger Cable</a>
-                    <a href="/shop?category=8" class="nav-item nav-link">Charger For Car</a>
+                    @foreach($categories as $category)
+                        <a href="/shop?category={{ $category->id }}" class="nav-item nav-link">{{ $category->name }}</a>
+                    @endforeach
                 </div>
             </nav>
         </div>
-
         <div class="col-lg-9">
             <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
                 <a href="{{ url('/home') }}" class="text-decoration-none d-block d-lg-none">

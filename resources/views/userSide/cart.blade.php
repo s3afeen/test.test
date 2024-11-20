@@ -1,4 +1,5 @@
 @extends('layouts.masterUserSide.master')
+
 @section('content')
     <!-- Breadcrumb Start -->
     <div class="container-fluid">
@@ -24,7 +25,6 @@
                             <th>Products</th>
                             <th>Price</th>
                             <th>Quantity</th>
-
                             <th>Remove</th>
                         </tr>
                     </thead>
@@ -41,25 +41,18 @@
                             <td class="align-middle">
                                 <div class="input-group quantity mx-auto" style="width: 100px;">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus" data-id="{{ $item->id }}">
-                                            <i class="fa fa-minus"></i>
-                                        </button>
                                     </div>
                                     <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center"
                                            value="{{ $item->quantity }}" min="1">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus" data-id="{{ $item->id }}">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
                                     </div>
                                 </div>
-                                <!-- Form to submit updated quantity -->
                                 <form action="{{ route('cart.update', $item->id) }}" method="POST" class="update-quantity-form" style="display: none;">
                                     @csrf
                                     @method('PUT')
-                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center"
+                                    <input type="text" name="quantity" class="form-control form-control-sm bg-secondary border-0 text-center"
                                     value="{{ $item->quantity }}" min="1">
-                            </form>
+                                </form>
                             </td>
                             <td class="align-middle">
                                 <form action="{{ route('cart.remove', $item->id) }}" method="POST" style="display:inline;">
@@ -71,7 +64,6 @@
                                 </form>
                             </td>
                         </tr>
-
                         @empty
                             <tr>
                                 <td colspan="5" class="text-center py-4">
@@ -106,9 +98,12 @@
                                 return $item->quantity * $item->product->price;
                             }) + 10, 2) }}</h5>
                         </div>
-                        <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">
-                            Proceed To Checkout
-                        </button>
+                        <form id="checkout-form" method="POST" action="{{ route('cart.checkout') }}">
+                            @csrf
+                            <button type="submit" class="btn btn-block btn-primary font-weight-bold my-3 py-3" id="checkoutBtn">
+                                Proceed To Checkout
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -120,30 +115,59 @@
 @push('scripts')
 <script>
 $(document).ready(function () {
+    $('#checkout-form').on('submit', function(e) {
+        e.preventDefault();
+
+        const form = $(this);
+        const button = form.find('#checkoutBtn');
+
+        // Disable button and show loading state
+        button.prop('disabled', true).html('Processing...');
+
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: form.serialize(),
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Show success message
+                    alert(response.message);
+                    // Redirect to orders page
+                    window.location.href = response.redirect;
+                }
+            },
+            error: function(xhr) {
+                // Show error message
+                alert('Something went wrong. Please try again.');
+                // Reset button state
+                button.prop('disabled', false).html('Proceed To Checkout');
+            }
+        });
+    });
+
+    // Existing quantity update code
     $('.btn-plus, .btn-minus').on('click', function (e) {
-        e.preventDefault(); // منع إعادة تحميل الصفحة
-
+        e.preventDefault();
         const button = $(this);
-        const isPlus = button.hasClass('btn-plus'); // التحقق من نوع الزر
-        const input = button.closest('.quantity').find('input'); // حقل الإدخال
-        let value = parseInt(input.val()); // تحويل القيمة إلى عدد صحيح
+        const isPlus = button.hasClass('btn-plus');
+        const input = button.closest('.quantity').find('input');
+        let value = parseInt(input.val());
 
-        // تحديث الكمية بناءً على الزر
         if (isPlus) {
             value++;
         } else if (value > 1) {
             value--;
         }
 
-        input.val(value); // تحديث القيمة في حقل الإدخال
+        input.val(value);
 
-        // إرسال الطلب لتحديث الكمية في الخادم
         const form = button.closest('tr').find('form.update-quantity-form');
-        form.find('input[name="quantity"]').val(value); // تعيين الكمية الجديدة
-        form.submit(); // إرسال النموذج
+        form.find('input[name="quantity"]').val(value);
+        form.submit();
     });
 });
-
-
 </script>
 @endpush

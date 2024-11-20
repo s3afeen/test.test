@@ -5,8 +5,8 @@
         <div class="row px-xl-5">
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30">
-                    <a class="breadcrumb-item text-dark" href="#">Home</a>
-                    <a class="breadcrumb-item text-dark" href="#">Shop</a>
+                    <a class="breadcrumb-item text-dark" href="/home">home</a>
+                    <a class="breadcrumb-item text-dark" href="/shop">shop</a>
                     <span class="breadcrumb-item active">Shop Detail</span>
                 </nav>
             </div>
@@ -71,15 +71,15 @@
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                         <div class="input-group quantity mr-3" style="width: 130px;">
                             <div class="input-group-btn">
-                                <button type="button" class="btn btn-primary btn-minus">
+                                <!-- <button type="button" class="btn btn-primary btn-minus">
                                     <i class="fa fa-minus"></i>
-                                </button>
+                                </button> -->
                             </div>
                             <input type="number" name="quantity" class="form-control bg-secondary border-0 text-center" value="1" min="1">
                             <div class="input-group-btn">
-                                <button type="button" class="btn btn-primary btn-plus">
+                                <!-- <button type="button" class="btn btn-primary btn-plus">
                                     <i class="fa fa-plus"></i>
-                                </button>
+                                </button> -->
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary px-3">
